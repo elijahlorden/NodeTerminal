@@ -2,7 +2,7 @@ package com.eli.networkterminal.command;
 
 public interface Command {
 	
-	void doCommand(CommandResponse response, String[] args);
+	void doCommand(CommandResponse response, Object[] args);
 	
 	String getCommandName();
 	
@@ -12,6 +12,8 @@ public interface Command {
 	
 	String getLongDesc();
 	
-	String[] getArgumentList();
+	String getArgumentDesc();
+	
+	boolean checkParameters(Object[] args);
 	
 }

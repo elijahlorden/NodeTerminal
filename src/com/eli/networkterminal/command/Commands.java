@@ -2,7 +2,7 @@ package com.eli.networkterminal.command;
 
 import java.util.ArrayList;
 
-import com.eli.networkterminal.command.commands.CommandClear;
+import com.eli.networkterminal.command.commands.*;
 import com.eli.networkterminal.objects.MainTerminalWindow;
 import com.eli.networkterminal.tools.Util;
 
@@ -26,37 +26,20 @@ public class Commands {
 		
 		for (Command c : registeredCommands) {
 			if (c.getCommandGroup().equals(parsedCommandName[0]) && c.getCommandName().equals(parsedCommandName[1])) {
-				executeCommand(c, params, response);
+				executeCommand(c, Util.parseParamaters(params), response);
 				return;
 			}
 		}
 		response.end("Error, invalid command name.");
 	}
 	
-	public static void executeCommand(Command command, String[] args, CommandResponse response) { // rework required when network commands are implemented
-		String paramaterCheck = checkParamaters(command, args);
-		if (paramaterCheck == "Ok") {
+	public static void executeCommand(Command command, Object[] args, CommandResponse response) { // rework required when network commands are implemented
+		if (command.checkParameters(args) == true) {
 			command.doCommand(response, args);
 			response.end();
 		} else {
 			response.end("Error, invalid paramaters.");
 		}
-	}
-	
-	public static String checkParamaters(Command c, String[] args) {
-		if (c.getArgumentList() == null) return "Ok";
-		if (c.getArgumentList().length == 0) return "Ok";
-		
-		
-		
-		return "";
-	}
-	
-	public static void registerCommands() {
-		registeredCommands = new ArrayList<Command>();
-		registerCommand(new CommandClear());
-		
-		
 	}
 	
 	public static void registerCommand(Command command) {
@@ -73,6 +56,24 @@ public class Commands {
 		}
 		return new String[] {commandGroup, commandName[commandName.length-1]};
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public static void registerCommands() {
+		registeredCommands = new ArrayList<Command>();
+		registerCommand(new CommandClear());
+		registerCommand(new CommandTest());
+		
+		
+	}
+	
+	
 	
 	
 	
