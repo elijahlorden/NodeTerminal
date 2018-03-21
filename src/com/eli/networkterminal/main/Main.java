@@ -1,6 +1,7 @@
 package com.eli.networkterminal.main;
 
 import com.eli.networkterminal.command.Commands;
+import com.eli.networkterminal.objects.Configuration;
 import com.eli.networkterminal.objects.MainTerminalWindow;
 import com.eli.networkterminal.tools.Formatting;
 
@@ -10,6 +11,14 @@ public class Main {
 	public static MainTerminalWindow localTerminal;
 	
 	public static void main(String[] args) {
+		
+		Configuration mainConfig = new Configuration("config");
+		mainConfig.load();
+		
+		mainConfig.set("Test", "Stuff!");
+		System.out.println(mainConfig.get("Test", "Sthuff"));
+		
+		System.out.println(mainConfig.get("Test2", 5));
 		
 		Commands.registerCommands();
 		

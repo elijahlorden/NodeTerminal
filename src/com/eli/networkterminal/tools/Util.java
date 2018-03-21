@@ -43,6 +43,14 @@ public class Util {
 		return null;
 	}
 	
+	public static Object transformString(String s) {
+		Object tryNum = tryParseNumber(s);
+		if (tryNum != null) {
+			return tryNum;
+		}
+		return s;
+	}
+	
 	public static void printArray(Object[] array) {
 		for (Object o : array) {
 			System.out.println(o);

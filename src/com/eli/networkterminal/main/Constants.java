@@ -1,6 +1,7 @@
 package com.eli.networkterminal.main;
 
 import java.awt.Color;
+import java.io.File;
 import java.util.HashMap;
 
 public class Constants {
@@ -9,6 +10,8 @@ public class Constants {
 	
 	public static final String openTag = "<";
 	public static final String closeTag = ">";
+	
+	public static final String configFolder = System.getProperty("user.home") + File.separator + "Documents" + File.separator +".NodeTerminal";
 	
 	public static final HashMap<String, Color> colorMap = new HashMap<String, Color>(){{
 		put("BLACK",            Color.BLACK);
@@ -27,6 +30,13 @@ public class Constants {
 		put("PURPLE", 			new Color(192, 0, 255));
 		put("DARK_BLUE",  		new Color(0, 0, 128));
 	}};
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

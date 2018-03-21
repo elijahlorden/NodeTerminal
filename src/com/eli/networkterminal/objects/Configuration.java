@@ -8,6 +8,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 
+import com.eli.networkterminal.main.Constants;
+import com.eli.networkterminal.tools.Util;
+
 public class Configuration {
 
 	public final Properties properties;
@@ -15,12 +18,19 @@ public class Configuration {
 	
 	public Configuration(String fileName) {
 		this.properties = new Properties();
-		this.fileName = System.getProperty("user.home") + File.separator +".NodeTerminal" + File.separator + fileName;
+		this.fileName = Constants.configFolder + File.separator + fileName + ".properties";
 	}
 	
 	public boolean load() {
+		System.out.println("Loading configuration file " + fileName);
 		try {
-		InputStream is = new FileInputStream(fileName);
+		File conff = new File(Constants.configFolder);
+		conff.mkdirs();
+		File f = new File(fileName);
+		if (!f.exists()) {
+			f.createNewFile();
+		}
+		FileInputStream is = new FileInputStream(f);
 		properties.load(is);
 		is.close();
 		} catch(Exception e) {
@@ -40,6 +50,19 @@ public class Configuration {
 		}
 		return true;
 	}
+	
+	public void set(String key, Object value) {
+		String sValue = value.toString();
+		properties.setProperty(key, sValue);
+		save();
+	}
+	
+	public Object get(String key, Object defaultValue) {
+		String value = properties.getProperty(key, defaultValue.toString());
+		return Util.transformString(value);
+	}
+	
+	
 	
 	
 	
