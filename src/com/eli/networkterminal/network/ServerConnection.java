@@ -37,6 +37,7 @@ public class ServerConnection extends Thread {
 		return id;
 	}
 	
+	@Override
 	public void run() {
 		System.out.println("ServerNode thread " + id + " started");
 		while (true) {
