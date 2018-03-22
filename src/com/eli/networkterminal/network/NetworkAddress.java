@@ -9,8 +9,8 @@ import com.eli.networkterminal.tools.Util;
 
 public class NetworkAddress {
 	
-	public final byte[] address;
-	public final byte[] mask;
+	public byte[] address;
+	public byte[] mask;
 	
 	public NetworkAddress(byte[] address, byte[] mask) {
 		this.address = address;
@@ -61,7 +61,7 @@ public class NetworkAddress {
 		return (mask[0]&0xff) + "." + (mask[1]&0xff) + "." + (mask[2]&0xff) + "." + (mask[3]&0xff);
 	}
 	
-	public String octetsToString(byte[] octets) {
+	public static String octetsToString(byte[] octets) {
 		return (octets[0]&0xff) + "." + (octets[1]&0xff) + "." + (octets[2]&0xff) + "." + (octets[3]&0xff);
 	}
 	
@@ -83,18 +83,62 @@ public class NetworkAddress {
 		};
 	}
 	
-	public byte[] intToOctets(int n) {
+	public static byte[] invertOctets(byte[] in) {
+		return new byte[] {
+			(byte) ~in[0],	
+			(byte) ~in[1],	
+			(byte) ~in[2],	
+			(byte) ~in[3],	
+		};
+	}
+	
+	public static byte[] andOctets(byte[] b1, byte[] b2) {
+		return new byte[] {
+				(byte) (b1[0] & b2[0]),	
+				(byte) (b1[1] & b2[1]),	
+				(byte) (b1[2] & b2[2]),	
+				(byte) (b1[3] & b2[3]),	
+			};
+	}
+	
+	public static byte[] orOctets(byte[] b1, byte[] b2) {
+		return new byte[] {
+				(byte) (b1[0] | b2[0]),	
+				(byte) (b1[1] | b2[1]),	
+				(byte) (b1[2] | b2[2]),	
+				(byte) (b1[3] | b2[3]),	
+			};
+	}
+	
+	public static byte[] intToOctets(int n) {
 		return ByteBuffer.allocate(4).putInt(n).array();
 	}
 	
-	public int octetsToInt(byte[] octets) {
+	public static int octetsToInt(byte[] octets) {
 		return ByteBuffer.wrap(octets).getInt();
 	}
 	
-	public void incrementHostPortion() {
-		
+	public void incrementAddress() {
+		int addressInteger = octetsToInt(address);
+		addressInteger++;
+		address = intToOctets(addressInteger);
 	}
-	
+
+	public byte[] getAddress() {
+		return address;
+	}
+
+	public void setAddress(byte[] address) {
+		this.address = address;
+	}
+
+	public byte[] getMask() {
+		return mask;
+	}
+
+	public void setMask(byte[] mask) {
+		this.mask = mask;
+	}
 	
 	
 	
