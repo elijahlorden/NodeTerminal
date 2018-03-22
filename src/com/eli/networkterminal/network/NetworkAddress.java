@@ -3,6 +3,7 @@ package com.eli.networkterminal.network;
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
+import java.nio.ByteBuffer;
 
 import com.eli.networkterminal.tools.Util;
 
@@ -47,6 +48,10 @@ public class NetworkAddress {
 		}
 		return null;
 	}
+	
+	public NetworkAddress clone() {
+		return new NetworkAddress(address, mask);
+	}
 
 	public String addressToString() {
 		return (address[0]&0xff) + "." + (address[1]&0xff) + "." + (address[2]&0xff) + "." + (address[3]&0xff);
@@ -77,6 +82,24 @@ public class NetworkAddress {
 			(byte) ((mask[3]) & address[3])
 		};
 	}
+	
+	public byte[] intToOctets(int n) {
+		return ByteBuffer.allocate(4).putInt(n).array();
+	}
+	
+	public int octetsToInt(byte[] octets) {
+		return ByteBuffer.wrap(octets).getInt();
+	}
+	
+	public void incrementHostPortion() {
+		
+	}
+	
+	
+	
+	
+	
+	
 	
 	
 	

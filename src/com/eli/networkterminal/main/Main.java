@@ -33,6 +33,7 @@ public class Main {
 		System.out.println(localAddress.maskToString());
 		System.out.println(localAddress.octetsToString(localAddress.getHostPortion()));
 		System.out.println(localAddress.octetsToString(localAddress.getNetworkPortion()));
+		System.out.println(localAddress.octetsToInt(localAddress.getNetworkPortion()));
 	}
 
 }
