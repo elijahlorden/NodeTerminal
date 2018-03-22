@@ -29,10 +29,10 @@ public class ServerNode implements Runnable {
 
 	@Override
 	public void run() {
-		while (true) {
+		while (nodeThread != null) {
 			try {
 				startConnection(serverNodeSocket.accept());
-			} catch(Exception e) {System.out.println("Error accepting ClientNode: " + e.toString());}
+			} catch (Exception e) {System.out.println("Error accepting ClientNode: " + e.toString());}
 		}
 	}
 	
@@ -83,6 +83,7 @@ public class ServerNode implements Runnable {
 	public void stopNode() {
 		if (nodeThread != null) {
 			nodeThread.interrupt();
+			nodeThread = null;
 		}
 	}
 	
