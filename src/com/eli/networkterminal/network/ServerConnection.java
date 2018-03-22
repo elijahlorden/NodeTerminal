@@ -41,7 +41,7 @@ public class ServerConnection extends Thread {
 		System.out.println("ServerNode thread " + id + " started");
 		while (true) {
 			try {
-				server.handleIncomingSignal(id, streamIn.readUTF());
+				server.handleIncomingSignal(this, streamIn.readUTF());
 			} catch (IOException e) {
 				System.out.println(id + " threw error while reading: " + e.getMessage());
 				server.removeConnection(id);

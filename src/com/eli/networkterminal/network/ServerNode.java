@@ -56,8 +56,8 @@ public class ServerNode implements Runnable {
 		}
 	}
 	
-	public synchronized void handleIncomingSignal(int is, String signal) {
-		
+	public synchronized void handleIncomingSignal(ServerConnection connection, String signal) {
+		System.out.println(signal);
 	}
 	
 	public synchronized void removeConnection(int id) {
