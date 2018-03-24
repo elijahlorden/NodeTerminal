@@ -5,6 +5,7 @@ import com.eli.networkterminal.network.ClientNode;
 import com.eli.networkterminal.network.ServerNode;
 import com.eli.networkterminal.objects.Configuration;
 import com.eli.networkterminal.objects.MainTerminalWindow;
+import com.eli.networkterminal.objects.Packet;
 import com.eli.networkterminal.tools.Formatting;
 
 public class Main {
@@ -25,6 +26,13 @@ public class Main {
 		ServerNode server = new ServerNode(12345);
 		ClientNode client = new ClientNode("127.0.0.1", 12345);
 		client.send("Stuff");
+		
+		Packet p = new Packet("Test", "TestDevice", "OtherTestDevice", new String[][]{{"This is stuff", "things!"}, {"Other stuff and things!"}});
+		
+		String ps = p.getJSON();
+		System.out.println(ps);
+		
+		Packet np = Packet.fromJSON(ps);
 		
 	}
 
