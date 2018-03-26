@@ -68,18 +68,18 @@ public class Configuration {
 		save();
 	}
 	
-	public synchronized Object get(String key, String defaultValue) {
+	public synchronized String get(String key, String defaultValue) {
 		String value = properties.getProperty(key, defaultValue);
-		return Util.transformString(value);
+		return value;
 	}
 	
-	public synchronized Object get(String key) { // If using this, make sure there is a default value specified in Constants.configDefaults.  Otherwise, the default will be set to an emptystring.
+	public synchronized String get(String key) { // If using this, make sure there is a default value specified in Constants.configDefaults.  Otherwise, the default will be set to an emptystring.
 		String defaultValue = "";
 		if (Constants.configDefaults.containsKey(key)) {
 			defaultValue = Constants.configDefaults.get(key);
 		}
 		String value = properties.getProperty(key, defaultValue.toString());
-		return Util.transformString(value);
+		return value;
 	}
 	
 	

@@ -17,10 +17,14 @@ public class ServerNode implements Runnable {
 	
 	public final ArrayList<ServerConnection> connections;
 	
+	public final ArrayList<PacketHandler> handlers;
+	
 	
 	public ServerNode(int port) {
 		this.port = port;
 		this.connections = new ArrayList<ServerConnection>();
+		this.handlers = new ArrayList<PacketHandler>();
+		registerPacketHandlers();
 		try {
 		System.out.println("Opening ServerNode on port " + port);
 		serverNodeSocket = new ServerSocket(port);
@@ -28,7 +32,11 @@ public class ServerNode implements Runnable {
 		startNode();
 		} catch (Exception e) {e.printStackTrace();}
 	}
-
+	
+	public void registerPacketHandlers() {
+		
+	}
+	
 	@Override
 	public void run() {
 		while (nodeThread != null) {

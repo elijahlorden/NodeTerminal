@@ -5,7 +5,7 @@ import com.google.gson.Gson;
 public class Packet {
 	
 	private String header;
-	private String senderName;
+	private String senderName; // Most of the time this will not matter, but some scenarios will require this to be defined on the client.
 	private String receiverName;
 	private String[][] data;
 	

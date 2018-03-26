@@ -26,8 +26,6 @@ public class Main {
 		ServerNode server = new ServerNode(12345);
 		ClientNode client = new ClientNode("127.0.0.1", 12345);
 		
-		client.send("Stuff!");
-		
 		
 		
 	}

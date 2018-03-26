@@ -5,7 +5,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
+import com.eli.networkterminal.main.Constants;
+import com.eli.networkterminal.objects.Configuration;
 import com.eli.networkterminal.objects.Packet;
 
 public class ClientNode {
@@ -18,22 +21,30 @@ public class ClientNode {
 	public final String hostname;
 	public final int port;
 	
+	public final ArrayList<PacketHandler> handlers;
+	
 	public ClientNode(String hostname, int port) {
 		this.hostname = hostname;
 		this.port = port;
+		this.handlers = new ArrayList<PacketHandler>();
+		registerPacketHandlers();
 		System.out.println("Establishing connection with Server at " + hostname + ":" + port);
 		try {
 			clientNodeSocket = new Socket(hostname, port);
 			System.out.println("Connected");
 			start();
 			System.out.println("Sending local Node info");
-			Packet infopkt = new Packet("NodeInfo");
+			Packet infopkt = new Packet("NodeInfo", Configuration.getConfig(Constants.mainConfigName).get("DeviceName"));
 			send(infopkt);
 		} catch (UnknownHostException e ) {
 			System.out.println("Unknown Host: " + hostname + ":" + port);
 		} catch (Exception e) {
 			System.out.println("Unexpected error: " + e.getMessage());
 		}
+	}
+	
+	public void registerPacketHandlers() {
+		
 	}
 	
 	public boolean send(String signal) {
