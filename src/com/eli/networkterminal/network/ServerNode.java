@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.UUID;
+
+import com.eli.networkterminal.objects.Packet;
 
 public class ServerNode implements Runnable {
 
@@ -24,7 +27,6 @@ public class ServerNode implements Runnable {
 		System.out.println("ServerNode running on port " + port);
 		startNode();
 		} catch (Exception e) {e.printStackTrace();}
-		
 	}
 
 	@Override
@@ -36,9 +38,9 @@ public class ServerNode implements Runnable {
 		}
 	}
 	
-	public ServerConnection getConnectionByID (int id) {
+	public ServerConnection getConnectionByID (UUID id) {
 		for (ServerConnection c : connections) {
-			if (c.getID() == id) {
+			if (c.getID().equals(id)) {
 				return c;
 			}
 		}
@@ -57,10 +59,15 @@ public class ServerNode implements Runnable {
 	}
 	
 	public synchronized void handleIncomingSignal(ServerConnection connection, String signal) {
-		System.out.println(signal);
+		Packet pkt = Packet.fromJSON(signal);
+		if (pkt != null) {
+			System.out.println("Received packet with header '" + pkt.getHeader() + "'");
+		} else {
+			System.out.println("Invalid packet data");
+		}
 	}
 	
-	public synchronized void removeConnection(int id) {
+	public synchronized void removeConnection(UUID id) {
 		ServerConnection connection = getConnectionByID(id);
 		if (connection != null) {
 			System.out.println("Removing ServerNode thread " + id);

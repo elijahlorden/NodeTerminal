@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import com.eli.networkterminal.objects.Packet;
+
 public class ClientNode {
 	
 	private Socket clientNodeSocket;
@@ -24,6 +26,9 @@ public class ClientNode {
 			clientNodeSocket = new Socket(hostname, port);
 			System.out.println("Connected");
 			start();
+			System.out.println("Sending local Node info");
+			Packet infopkt = new Packet("NodeInfo");
+			send(infopkt);
 		} catch (UnknownHostException e ) {
 			System.out.println("Unknown Host: " + hostname + ":" + port);
 		} catch (Exception e) {
@@ -41,8 +46,24 @@ public class ClientNode {
 		return true;
 	}
 	
+	public boolean send(Packet pkt) {
+		String signal = pkt.getJSON();
+		try {
+			output.writeUTF(signal);
+		} catch (IOException e) {
+			System.out.println("Error while sending signal: " + e.getMessage());
+			return false;
+		}
+		return true;
+	}
+	
 	public void handle(String signal) {
-		
+		Packet pkt = Packet.fromJSON(signal);
+		if (pkt != null) {
+			System.out.println("Received packet with header" + pkt.getHeader());
+		} else {
+			System.out.println("Invalid packet data");
+		}
 	}
 	
 	public void start() throws IOException {

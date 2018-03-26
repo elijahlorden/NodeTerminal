@@ -15,7 +15,6 @@ public class Packet {
 		this.receiverName = receiverName;
 		this.data = data;
 	}
-	
 
 	public Packet(String header, String senderName, String receiverName) {
 		this.header = header;
@@ -42,11 +41,13 @@ public class Packet {
 	
 	public static Packet fromJSON(String json) {
 		Gson gson = new Gson();
-		Packet pkt = gson.fromJson(json, Packet.class);
+		Packet pkt = null;
+		try {
+			pkt = gson.fromJson(json, Packet.class);
+		} catch (Exception e) {}
 		return pkt;
 	}
 	
-
 	public String getHeader() {
 		return header;
 	}

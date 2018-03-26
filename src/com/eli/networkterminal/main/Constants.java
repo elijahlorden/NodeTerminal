@@ -11,7 +11,15 @@ public class Constants {
 	public static final String openTag = "<";
 	public static final String closeTag = ">";
 	
+	public static final String serverName = "Server";
+	
 	public static final String configFolder = System.getProperty("user.home") + File.separator + "Documents" + File.separator +".NodeTerminal";
+	
+	public static final String mainConfigName = "config";
+	
+	public static final HashMap<String, String> configDefaults = new HashMap<String, String>(){{
+		put("NodeName", "GenericNode");
+	}};
 	
 	public static final HashMap<String, Color> colorMap = new HashMap<String, Color>(){{
 		put("BLACK",            Color.BLACK);

@@ -3,9 +3,8 @@ package com.eli.networkterminal.objects;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Properties;
 
 import com.eli.networkterminal.main.Constants;
@@ -16,9 +15,21 @@ public class Configuration {
 	public final Properties properties;
 	public final String fileName;
 	
+	public static final HashMap<String, Configuration> configList = new HashMap<String, Configuration>();
+	
 	public Configuration(String fileName) {
 		this.properties = new Properties();
 		this.fileName = Constants.configFolder + File.separator + fileName + ".properties";
+	}
+	
+	public static synchronized Configuration getConfig(String name) {
+		if (configList.containsKey(name)) {
+			return configList.get(name);
+		} else {
+			Configuration nc = new Configuration(name);
+			nc.load();
+			return nc;
+		}
 	}
 	
 	public boolean load() {
@@ -51,13 +62,22 @@ public class Configuration {
 		return true;
 	}
 	
-	public void set(String key, Object value) {
+	public synchronized void set(String key, Object value) {
 		String sValue = value.toString();
 		properties.setProperty(key, sValue);
 		save();
 	}
 	
-	public Object get(String key, Object defaultValue) {
+	public synchronized Object get(String key, String defaultValue) {
+		String value = properties.getProperty(key, defaultValue);
+		return Util.transformString(value);
+	}
+	
+	public synchronized Object get(String key) { // If using this, make sure there is a default value specified in Constants.configDefaults.  Otherwise, the default will be set to an emptystring.
+		String defaultValue = "";
+		if (Constants.configDefaults.containsKey(key)) {
+			defaultValue = Constants.configDefaults.get(key);
+		}
 		String value = properties.getProperty(key, defaultValue.toString());
 		return Util.transformString(value);
 	}

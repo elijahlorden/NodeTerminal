@@ -6,20 +6,23 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.UUID;
 
 public class ServerConnection extends Thread {
 	
 	private Socket socket;
-	private int id;
+	private final UUID id;
 	private ServerNode server;
 	
 	private DataInputStream streamIn;
 	private DataOutputStream streamOut;
 	
+	private String deviceName;
+	
 	public ServerConnection(Socket socket, ServerNode server) {
 		this.socket = socket;
 		this.server = server;
-		this.id = socket.getPort();
+		this.id = UUID.randomUUID();
 	}
 	
 	public void send(String signal) {
@@ -33,7 +36,7 @@ public class ServerConnection extends Thread {
 		}
 	}
 	
-	public int getID() {
+	public UUID getID() {
 		return id;
 	}
 	

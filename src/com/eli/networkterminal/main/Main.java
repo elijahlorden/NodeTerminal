@@ -15,7 +15,7 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
-		Configuration mainConfig = new Configuration("config");
+		Configuration mainConfig = Configuration.getConfig("config");
 		mainConfig.load();
 		
 		Commands.registerCommands();
@@ -25,14 +25,10 @@ public class Main {
 		
 		ServerNode server = new ServerNode(12345);
 		ClientNode client = new ClientNode("127.0.0.1", 12345);
-		client.send("Stuff");
 		
-		Packet p = new Packet("Test", "TestDevice", "OtherTestDevice", new String[][]{{"This is stuff", "things!"}, {"Other stuff and things!"}});
+		client.send("Stuff!");
 		
-		String ps = p.getJSON();
-		System.out.println(ps);
 		
-		Packet np = Packet.fromJSON(ps);
 		
 	}
 
