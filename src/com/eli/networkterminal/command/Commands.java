@@ -69,7 +69,7 @@ public class Commands {
 		registeredCommands = new ArrayList<Command>();
 		registerCommand(new CommandClear());
 		registerCommand(new CommandTest());
-		
+		registerCommand(new CommandClientConnect());
 		
 	}
 	

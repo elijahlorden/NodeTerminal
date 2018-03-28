@@ -18,29 +18,14 @@ public class ClientNode {
 	private DataInputStream input;
 	private DataOutputStream output;
 	
-	public final String hostname;
-	public final int port;
+	public String hostname;
+	public int port;
 	
 	public final ArrayList<PacketHandler> handlers;
 	
-	public ClientNode(String hostname, int port) {
-		this.hostname = hostname;
-		this.port = port;
+	public ClientNode() {
 		this.handlers = new ArrayList<PacketHandler>();
 		registerPacketHandlers();
-		System.out.println("Establishing connection with Server at " + hostname + ":" + port);
-		try {
-			clientNodeSocket = new Socket(hostname, port);
-			System.out.println("Connected");
-			start();
-			System.out.println("Sending local Node info");
-			Packet infopkt = new Packet("NodeInfo", Configuration.getConfig(Constants.mainConfigName).get("DeviceName"));
-			send(infopkt);
-		} catch (UnknownHostException e ) {
-			System.out.println("Unknown Host: " + hostname + ":" + port);
-		} catch (Exception e) {
-			System.out.println("Unexpected error: " + e.getMessage());
-		}
 	}
 	
 	public void registerPacketHandlers() {
@@ -77,10 +62,25 @@ public class ClientNode {
 		}
 	}
 	
-	public void start() throws IOException {
-		input = new DataInputStream(clientNodeSocket.getInputStream());
-		output = new DataOutputStream(clientNodeSocket.getOutputStream());
-		listenerThread = new ClientListenerThread(this, clientNodeSocket);
+	// 0 = success, 1 = unknown host, 2 = unexpected error
+	public int start(String hostname, int port) {
+		this.hostname = hostname;
+		this.port = port;
+		System.out.println("Establishing connection with Server at " + hostname + ":" + port);
+		try {
+			clientNodeSocket = new Socket(hostname, port);
+			input = new DataInputStream(clientNodeSocket.getInputStream());
+			output = new DataOutputStream(clientNodeSocket.getOutputStream());
+			listenerThread = new ClientListenerThread(this, clientNodeSocket);
+			System.out.println("Connected");
+		} catch (UnknownHostException e ) {
+			System.out.println("Unknown Host: " + hostname + ":" + port);
+			return 1;
+		} catch (Exception e) {
+			System.out.println("Unexpected error: " + e.getMessage());
+			return 2;
+		}
+		return 0;
 	}
 	
 	public void stop() {

@@ -6,6 +6,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import com.eli.networkterminal.main.Constants;
+import com.eli.networkterminal.network.serverpackethandlers.*;
 import com.eli.networkterminal.objects.Packet;
 
 public class ServerNode implements Runnable {
@@ -19,11 +21,14 @@ public class ServerNode implements Runnable {
 	
 	public final ArrayList<PacketHandler> handlers;
 	
+	public final PacketHandler forwardPacketHandler;
+	
 	
 	public ServerNode(int port) {
 		this.port = port;
 		this.connections = new ArrayList<ServerConnection>();
 		this.handlers = new ArrayList<PacketHandler>();
+		this.forwardPacketHandler = new PacketHandlerForward();
 		registerPacketHandlers();
 		try {
 		System.out.println("Opening ServerNode on port " + port);
@@ -34,7 +39,7 @@ public class ServerNode implements Runnable {
 	}
 	
 	public void registerPacketHandlers() {
-		
+		handlers.add(new PacketHandlerNodeInfo());
 	}
 	
 	@Override
@@ -55,12 +60,21 @@ public class ServerNode implements Runnable {
 		return null;
 	}
 	
+	public ServerConnection getConnection(String s) {
+		
+		
+		return null;
+	}
+	
 	private void startConnection(Socket s) {
 		System.out.println("New client connection starting");
 		ServerConnection newConnection = new ServerConnection(s, this);
 		try {
 			newConnection.open();
 			newConnection.start();
+			// send info packet
+			Packet infoPacket = new Packet("ConnectionInfo");
+			infoPacket.setData(new String[][]{{newConnection.getID().toString()}});
 		} catch (IOException e) {
 			System.out.println("Error starting connection thread: " + e.getMessage());
 		}
@@ -68,8 +82,22 @@ public class ServerNode implements Runnable {
 	
 	public synchronized void handleIncomingSignal(ServerConnection connection, String signal) {
 		Packet pkt = Packet.fromJSON(signal);
-		if (pkt != null) {
+		if (pkt != null && pkt.getHeader() != null) {
 			System.out.println("Received packet with header '" + pkt.getHeader() + "'");
+			boolean handled = false;
+			for (PacketHandler p : handlers) {
+				if (p.getHeader().equals(pkt.getHeader())) {
+					handled = true;
+					p.handle(pkt);
+				}
+			}
+			if (pkt.getReceiverName() != null && (!handled && !pkt.getReceiverName().equals(Constants.serverName))) {
+				System.out.println("");
+			} else if (handled) {
+				
+			} else {
+				System.out.println("Could not handle packet with header '" + pkt.getHeader() + "'");
+			}
 		} else {
 			System.out.println("Invalid packet data");
 		}
