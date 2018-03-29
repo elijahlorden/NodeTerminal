@@ -4,25 +4,30 @@ import com.eli.networkterminal.command.Command;
 import com.eli.networkterminal.command.CommandResponse;
 import com.eli.networkterminal.main.Main;
 import com.eli.networkterminal.tools.Formatting;
+import com.eli.networkterminal.tools.Tag;
 import com.eli.networkterminal.tools.Util;
 
 public class CommandClientConnect implements Command {
 
 	@Override
 	public void doCommand(CommandResponse response, Object[] args) {
+		if (Main.client.isConnected()) {
+			response.end("Error, ClientNode is already connected to "+ Formatting.formatHost(Main.client.hostname, Integer.toString(Main.client.port)));
+			return;
+		}
 		String hostname = (String) args[0];
 		int port = (int) args[1];
-		response.println("Attempting connection with " + hostname + ":" + port);
+		response.println("Attempting connection with " + Formatting.formatHost(hostname, Integer.toString(port)));
 		int error = Main.client.start(hostname, port);
 		switch(error) {
 		case 0:
-			response.println(Formatting.tag("color green") + "Connection established");
+			response.println(Tag.tag("color green") + "Connection established");
 			break;
 		case 1:
-			response.println(Formatting.tag("color red") + "Connection failed, unknown host");
+			response.end("Connection failed, unknown host");
 			break;
 		case 2:
-			response.println(Formatting.tag("color red") + "Connection failed, unexpected error");
+			response.end("Connection failed, unexpected error");
 			break;
 		}
 	}
@@ -39,7 +44,7 @@ public class CommandClientConnect implements Command {
 
 	@Override
 	public String getShortDesc() {
-		return "Test";
+		return "Attempt to connect to a ServerNode";
 	}
 
 	@Override

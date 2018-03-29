@@ -43,7 +43,7 @@ public class ServerConnection extends Thread {
 	@Override
 	public void run() {
 		System.out.println("ServerNode thread " + id + " started");
-		while (true) {
+		while (socket.isConnected() && !socket.isClosed()) {
 			try {
 				server.handleIncomingSignal(this, streamIn.readUTF());
 			} catch (IOException e) {

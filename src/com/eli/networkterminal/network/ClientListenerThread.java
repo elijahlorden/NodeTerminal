@@ -36,7 +36,7 @@ public class ClientListenerThread extends Thread {
 	
 	@Override
 	public void run() {
-		while (true) {
+		while (clientNode.isConnected()) {
 			try {
 				clientNode.handle(input.readUTF());
 			} catch (Exception e) {

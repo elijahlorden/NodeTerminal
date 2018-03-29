@@ -8,7 +8,7 @@ import com.eli.networkterminal.tools.Formatting;
 public class CommandResponse {
 
 	public MainTerminalWindow localWindow;
-	
+	private boolean ended = false;
 	
 	public CommandResponse(MainTerminalWindow localWindow) {
 		this.localWindow = localWindow;
@@ -53,11 +53,15 @@ public class CommandResponse {
 	}
 	
 	public void end() { // will be used in network commands
-		
+		if (!ended) {
+			ended = true;
+		}
 	}
 	
 	public void end(String error) {
-		println(Formatting.tag("i") + Formatting.tag("color red") + error);
+		if (!ended) {
+			println(Formatting.tag("i") + Formatting.tag("color red") + error);
+		}
 	}
 	
 	

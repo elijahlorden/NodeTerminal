@@ -58,6 +58,26 @@ public class Formatting {
 		return Constants.openTag + s1 + " " + s2 + Constants.closeTag;
 	}
 	
+	public static String formatHost(String hostname, String port) {
+		String r = "";
+		r+= Formatting.tag("color orange") + hostname;
+		if (port != null) {
+			r+= Formatting.tag("color white") + ":" + Formatting.tag("color orange") + port;
+		}
+		return r;
+	}
+	
+	public static String formatUUID(String s) {
+		String r = "";
+		String[] parts = s.split("-");
+		if (parts.length < 1) return "";
+		for (int i = 0; i<parts.length-1; i++) {
+			r+= tag("color green") + parts[i] + tag("color yellow") + "-" + tag("color green");
+		}
+		r+= tag("color green") + parts[parts.length-1];
+		return r;
+	}
+	
 	public static String typeColor(String type) {
 		switch(type){
 		case "Float":

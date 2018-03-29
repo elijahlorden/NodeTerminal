@@ -23,6 +23,7 @@ public class ServerNode implements Runnable {
 	
 	public final PacketHandler forwardPacketHandler;
 	
+	public final UUID serverUUID = UUID.randomUUID();
 	
 	public ServerNode(int port) {
 		this.port = port;
@@ -69,12 +70,14 @@ public class ServerNode implements Runnable {
 	private void startConnection(Socket s) {
 		System.out.println("New client connection starting");
 		ServerConnection newConnection = new ServerConnection(s, this);
+		connections.add(newConnection);
 		try {
 			newConnection.open();
 			newConnection.start();
 			// send info packet
-			Packet infoPacket = new Packet("ConnectionInfo");
-			infoPacket.setData(new String[][]{{newConnection.getID().toString()}});
+			Packet infoPacket = new Packet("ConnectionInfo", Constants.serverName);
+			infoPacket.setData(new String[][]{{newConnection.getID().toString(), serverUUID.toString()}}); //{{Connection UUID, Server UUID}}
+			newConnection.send(infoPacket.getJSON());
 		} catch (IOException e) {
 			System.out.println("Error starting connection thread: " + e.getMessage());
 		}

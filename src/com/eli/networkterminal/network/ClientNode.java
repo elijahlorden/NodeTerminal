@@ -6,9 +6,10 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.UUID;
 
+import com.eli.networkterminal.clientpackethandlers.*;
 import com.eli.networkterminal.main.Constants;
-import com.eli.networkterminal.objects.Configuration;
 import com.eli.networkterminal.objects.Packet;
 
 public class ClientNode {
@@ -21,15 +22,22 @@ public class ClientNode {
 	public String hostname;
 	public int port;
 	
+	private UUID serverConnectionID;
+	private UUID serverID;
+	
+	public UUID getServerID() {
+		return serverID;
+	}
+
+	public void setServerID(UUID serverID) {
+		this.serverID = serverID;
+	}
+
 	public final ArrayList<PacketHandler> handlers;
 	
 	public ClientNode() {
 		this.handlers = new ArrayList<PacketHandler>();
 		registerPacketHandlers();
-	}
-	
-	public void registerPacketHandlers() {
-		
 	}
 	
 	public boolean send(String signal) {
@@ -56,7 +64,17 @@ public class ClientNode {
 	public void handle(String signal) {
 		Packet pkt = Packet.fromJSON(signal);
 		if (pkt != null) {
-			System.out.println("Received packet with header" + pkt.getHeader());
+			System.out.println("Received packet with header " + pkt.getHeader());
+			boolean handled = false;
+			for (PacketHandler p : handlers) {
+				if (p.getHeader().equals(pkt.getHeader())) {
+					handled = true;
+					p.handle(pkt);
+				}
+			}
+			if (!handled) {
+				System.out.println("Could not handle packet with header '" + pkt.getHeader() + "'");
+			}
 		} else {
 			System.out.println("Invalid packet data");
 		}
@@ -93,6 +111,22 @@ public class ClientNode {
 		}
 		listenerThread.close();
 		listenerThread.interrupt();
+	}
+	
+	public boolean isConnected() {
+		return clientNodeSocket != null && !clientNodeSocket.isClosed() && clientNodeSocket.isConnected() && listenerThread.isAlive() && !listenerThread.isInterrupted();
+	}
+	
+	public UUID getServerConnectionID() {
+		return serverConnectionID;
+	}
+
+	public void setServerConnectionID(UUID serverConnectionID) {
+		this.serverConnectionID = serverConnectionID;
+	}
+
+	public void registerPacketHandlers() {
+		handlers.add(new PacketHandlerConnectionInfo());
 	}
 	
 }

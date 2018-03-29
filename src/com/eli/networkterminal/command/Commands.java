@@ -70,6 +70,8 @@ public class Commands {
 		registerCommand(new CommandClear());
 		registerCommand(new CommandTest());
 		registerCommand(new CommandClientConnect());
+		registerCommand(new CommandClientDisconnect());
+		registerCommand(new CommandClientInfo());
 		
 	}
 	
