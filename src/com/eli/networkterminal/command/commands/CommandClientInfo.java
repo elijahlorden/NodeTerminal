@@ -15,7 +15,7 @@ public class CommandClientInfo implements Command {
 			response.println("Connected to: " + Formatting.formatHost(Main.client.hostname, Integer.toString(Main.client.port)));
 			if (Main.client.getServerConnectionID() != null && Main.client.getServerConnectionID() != null) {
 				response.println("Local ID: " + Formatting.formatUUID(Main.client.getServerConnectionID().toString()));
-				response.println("Remote ID: " + Formatting.formatUUID(Main.client.getServerConnectionID().toString()));
+				response.println("Remote ID: " + Formatting.formatUUID(Main.client.getServerID().toString()));
 			}
 		} else {
 			response.println("Connection state: " + Tag.tag("color red") + "Disconnected");

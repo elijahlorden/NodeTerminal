@@ -20,16 +20,19 @@ public class Main {
 	public static void main(String[] args) {
 		
 		Configuration mainConfig = Configuration.getConfig("config");
-		mainConfig.load();
 		
 		client = new ClientNode();
 		
 		Commands.registerCommands();
+		if (mainConfig.get("createTerminalWindow") == "True") {
+			localTerminal = new MainTerminalWindow("NodeTerminal " + Constants.version);
+			localTerminal.println(Formatting.tag("color cyan") + "NodeTerminal " + Formatting.tag("/c") + "version " + Formatting.tag("color green") + Constants.version);
+			server = new ServerNode(localTerminal);
+		} else {
+			server = new ServerNode();
+		}
 		
-		localTerminal = new MainTerminalWindow("NodeTerminal " + Constants.version);
-		localTerminal.println(Formatting.tag("color cyan") + "NodeTerminal " + Formatting.tag("/c") + "version " + Formatting.tag("color green") + Constants.version);
 		
-		server = new ServerNode(12345);
 		
 		
 	}

@@ -18,7 +18,10 @@ public class Constants {
 	public static final String mainConfigName = "config";
 	
 	public static final HashMap<String, String> configDefaults = new HashMap<String, String>(){{
-		put("NodeName", "GenericNode");
+		put("config.NodeName", "GenericNode");
+		put("config.createTerminalWindow", "True");
+		put("config.autoStartServer","True");
+		put("config.serverPort", "57635");
 	}};
 	
 	public static final HashMap<String, Color> colorMap = new HashMap<String, Color>(){{
@@ -34,7 +37,7 @@ public class Constants {
 		put("PINK",             Color.PINK);
 		put("RED",              Color.RED);
 		put("WHITE",            Color.WHITE);
-		put("YELLOW",            Color.YELLOW);
+		put("YELLOW",           Color.YELLOW);
 		put("PURPLE", 			new Color(192, 0, 255));
 		put("DARK_BLUE",  		new Color(0, 0, 128));
 	}};

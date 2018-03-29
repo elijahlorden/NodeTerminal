@@ -14,12 +14,14 @@ public class Configuration {
 
 	public final Properties properties;
 	public final String fileName;
+	public final String name;
 	
 	public static final HashMap<String, Configuration> configList = new HashMap<String, Configuration>();
 	
-	public Configuration(String fileName) {
+	public Configuration(String name) {
 		this.properties = new Properties();
-		this.fileName = Constants.configFolder + File.separator + fileName + ".properties";
+		this.name = name;
+		this.fileName = Constants.configFolder + File.separator + name + ".properties";
 	}
 	
 	public static synchronized Configuration getConfig(String name) {
@@ -28,6 +30,7 @@ public class Configuration {
 		} else {
 			Configuration nc = new Configuration(name);
 			nc.load();
+			configList.put(name, nc);
 			return nc;
 		}
 	}
@@ -75,10 +78,10 @@ public class Configuration {
 	
 	public synchronized String get(String key) { // If using this, make sure there is a default value specified in Constants.configDefaults.  Otherwise, the default will be set to an emptystring.
 		String defaultValue = "";
-		if (Constants.configDefaults.containsKey(key)) {
-			defaultValue = Constants.configDefaults.get(key);
+		if (Constants.configDefaults.containsKey(name + "." + key)) {
+			defaultValue = Constants.configDefaults.get(name + "." + key);
 		}
-		String value = properties.getProperty(key, defaultValue.toString());
+		String value = properties.getProperty(key, defaultValue);
 		return value;
 	}
 	

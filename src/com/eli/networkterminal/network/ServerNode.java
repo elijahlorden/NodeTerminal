@@ -6,18 +6,24 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import com.eli.networkterminal.command.CommandResponse;
 import com.eli.networkterminal.main.Constants;
-import com.eli.networkterminal.network.serverpackethandlers.*;
+import com.eli.networkterminal.network.serverpackethandlers.PacketHandlerForward;
+import com.eli.networkterminal.network.serverpackethandlers.PacketHandlerNodeInfo;
+import com.eli.networkterminal.objects.Configuration;
+import com.eli.networkterminal.objects.MainTerminalWindow;
 import com.eli.networkterminal.objects.Packet;
+import com.eli.networkterminal.tools.Tag;
+import com.eli.networkterminal.tools.Util;
 
 public class ServerNode implements Runnable {
 
 	private Thread nodeThread;
 	private ServerSocket serverNodeSocket;
 	
-	public final int port;
+	public int port;
 	
-	public final ArrayList<ServerConnection> connections;
+	public ArrayList<ServerConnection> connections;
 	
 	public final ArrayList<PacketHandler> handlers;
 	
@@ -25,18 +31,30 @@ public class ServerNode implements Runnable {
 	
 	public final UUID serverUUID = UUID.randomUUID();
 	
-	public ServerNode(int port) {
-		this.port = port;
-		this.connections = new ArrayList<ServerConnection>();
+	public final CommandResponse terminalWrapper;
+	
+	public ServerNode() {
 		this.handlers = new ArrayList<PacketHandler>();
 		this.forwardPacketHandler = new PacketHandlerForward();
 		registerPacketHandlers();
-		try {
-		System.out.println("Opening ServerNode on port " + port);
-		serverNodeSocket = new ServerSocket(port);
-		System.out.println("ServerNode running on port " + port);
-		startNode();
-		} catch (Exception e) {e.printStackTrace();}
+		terminalWrapper = new CommandResponse();
+		init();
+	}
+	
+	public ServerNode(MainTerminalWindow window) {
+		this.handlers = new ArrayList<PacketHandler>();
+		this.forwardPacketHandler = new PacketHandlerForward();
+		registerPacketHandlers();
+		terminalWrapper = new CommandResponse(window);
+		init();
+	}
+	
+	private void init() {
+		Configuration config = new Configuration(Constants.mainConfigName);
+		if (config.get("autoStartServer") == "True") {
+			terminalWrapper.println("Auto-starting ServerNode");
+			startNode();
+		}
 	}
 	
 	public void registerPacketHandlers() {
@@ -61,12 +79,6 @@ public class ServerNode implements Runnable {
 		return null;
 	}
 	
-	public ServerConnection getConnection(String s) {
-		
-		
-		return null;
-	}
-	
 	private void startConnection(Socket s) {
 		System.out.println("New client connection starting");
 		ServerConnection newConnection = new ServerConnection(s, this);
@@ -75,7 +87,7 @@ public class ServerNode implements Runnable {
 			newConnection.open();
 			newConnection.start();
 			// send info packet
-			Packet infoPacket = new Packet("ConnectionInfo", Constants.serverName);
+			Packet infoPacket = new Packet("ConnectionInfo", serverUUID.toString(), newConnection.getID().toString());
 			infoPacket.setData(new String[][]{{newConnection.getID().toString(), serverUUID.toString()}}); //{{Connection UUID, Server UUID}}
 			newConnection.send(infoPacket.getJSON());
 		} catch (IOException e) {
@@ -119,14 +131,39 @@ public class ServerNode implements Runnable {
 		}
 	}
 	
-	public void startNode() {
+	public boolean startNode() {
 		if (nodeThread == null) {
+			Configuration config = new Configuration(Constants.mainConfigName);
+			String configPort = config.get("serverPort");
+			Object configPortn = Util.transformString(configPort);
+			int portn;
+			if (Util.getType(configPortn).equals("Integer") && (int) configPortn <= 65535) {
+				portn = (int) configPortn;
+			} else {
+				System.out.println("Invalid serverPort specified in config, using default port of 57635");
+				terminalWrapper.println(Tag.multiTag("color red", "i") + "Invalid serverPort specified in config, using default port of 57635");
+				portn = 57635;
+			}
+			this.port = portn;
+			this.connections = new ArrayList<ServerConnection>();
+			try {
+				System.out.println("Opening ServerNode on port " + port);
+				serverNodeSocket = new ServerSocket(port);
+				System.out.println("ServerNode running on port " + port);
+			} catch (Exception e) {e.printStackTrace(); return false;}
 			nodeThread = new Thread(this);
 			nodeThread.start();
+			return true;
 		}
+		return false;
 	}
 	
 	public void stopNode() {
+		for (ServerConnection connection : connections) {
+			Packet endPacket = new Packet("CloseConnection", serverUUID.toString(), connection.getID().toString());
+			endPacket.setData(new String[][]{{"ServerNode terminated"}});
+			connection.send(endPacket.getJSON());
+		}
 		if (nodeThread != null) {
 			nodeThread.interrupt();
 			nodeThread = null;
