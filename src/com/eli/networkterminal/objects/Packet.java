@@ -1,30 +1,32 @@
 package com.eli.networkterminal.objects;
 
+import java.util.UUID;
+
 import com.google.gson.Gson;
 
 public class Packet {
 	
 	private String header;
-	private String senderName; // Most of the time this will not matter, but some scenarios will require this to be defined on the client.
-	private String receiverName;
+	private UUID senderID; // Most of the time this will not matter, but some scenarios will require this to be defined on the client.
+	private UUID receiverID;
 	private String[][] data;
 	
-	public Packet(String header, String senderName, String receiverName, String[][] data) {
+	public Packet(String header, UUID senderID, UUID receiverID, String[][] data) {
 		this.header = header;
-		this.senderName = senderName;
-		this.receiverName = receiverName;
+		this.senderID = senderID;
+		this.receiverID = receiverID;
 		this.data = data;
 	}
 
-	public Packet(String header, String senderName, String receiverName) {
+	public Packet(String header, UUID senderID, UUID receiverID) {
 		this.header = header;
-		this.senderName = senderName;
-		this.receiverName = receiverName;
+		this.senderID = senderID;
+		this.receiverID = receiverID;
 	}
 
-	public Packet(String header, String senderName) {
+	public Packet(String header, UUID senderID) {
 		this.header = header;
-		this.senderName = senderName;
+		this.senderID = senderID;
 	}
 
 	public Packet(String header) {
@@ -56,20 +58,20 @@ public class Packet {
 		this.header = header;
 	}
 
-	public String getSenderName() {
-		return senderName;
+	public UUID getSenderID() {
+		return senderID;
 	}
 
-	public void setSenderName(String senderName) {
-		this.senderName = senderName;
+	public void setSenderID(UUID senderID) {
+		this.senderID = senderID;
 	}
 
-	public String getReceiverName() {
-		return receiverName;
+	public UUID getReceiverID() {
+		return receiverID;
 	}
 
-	public void setReceiverName(String receiverName) {
-		this.receiverName = receiverName;
+	public void setReceiverID(UUID receiverID) {
+		this.receiverID = receiverID;
 	}
 
 	public String[][] getData() {

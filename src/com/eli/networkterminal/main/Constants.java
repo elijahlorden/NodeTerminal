@@ -18,7 +18,7 @@ public class Constants {
 	public static final String mainConfigName = "config";
 	
 	public static final HashMap<String, String> configDefaults = new HashMap<String, String>(){{
-		put("config.NodeName", "GenericNode");
+		put("config.nodeName", "DefaultNodeName");
 		put("config.createTerminalWindow", "True");
 		put("config.autoStartServer","True");
 		put("config.serverPort", "57635");

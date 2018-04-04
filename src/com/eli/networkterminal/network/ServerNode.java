@@ -25,16 +25,16 @@ public class ServerNode implements Runnable {
 	
 	public ArrayList<ServerConnection> connections;
 	
-	public final ArrayList<PacketHandler> handlers;
+	public final ArrayList<ServerPacketHandler> handlers;
 	
-	public final PacketHandler forwardPacketHandler;
+	public final ServerPacketHandler forwardPacketHandler;
 	
 	public final UUID serverUUID = UUID.randomUUID();
 	
 	public final CommandResponse terminalWrapper;
 	
 	public ServerNode() {
-		this.handlers = new ArrayList<PacketHandler>();
+		this.handlers = new ArrayList<ServerPacketHandler>();
 		this.forwardPacketHandler = new PacketHandlerForward();
 		registerPacketHandlers();
 		terminalWrapper = new CommandResponse();
@@ -42,7 +42,7 @@ public class ServerNode implements Runnable {
 	}
 	
 	public ServerNode(MainTerminalWindow window) {
-		this.handlers = new ArrayList<PacketHandler>();
+		this.handlers = new ArrayList<ServerPacketHandler>();
 		this.forwardPacketHandler = new PacketHandlerForward();
 		registerPacketHandlers();
 		terminalWrapper = new CommandResponse(window);
@@ -87,9 +87,9 @@ public class ServerNode implements Runnable {
 			newConnection.open();
 			newConnection.start();
 			// send info packet
-			Packet infoPacket = new Packet("ConnectionInfo", serverUUID.toString(), newConnection.getID().toString());
+			Packet infoPacket = new Packet("ConnectionInfo", serverUUID, newConnection.getID());
 			infoPacket.setData(new String[][]{{newConnection.getID().toString(), serverUUID.toString()}}); //{{Connection UUID, Server UUID}}
-			newConnection.send(infoPacket.getJSON());
+			newConnection.send(infoPacket);
 		} catch (IOException e) {
 			System.out.println("Error starting connection thread: " + e.getMessage());
 		}
@@ -100,13 +100,13 @@ public class ServerNode implements Runnable {
 		if (pkt != null && pkt.getHeader() != null) {
 			System.out.println("Received packet with header '" + pkt.getHeader() + "'");
 			boolean handled = false;
-			for (PacketHandler p : handlers) {
+			for (ServerPacketHandler p : handlers) {
 				if (p.getHeader().equals(pkt.getHeader())) {
 					handled = true;
-					p.handle(pkt);
+					p.handle(pkt, this);
 				}
 			}
-			if (pkt.getReceiverName() != null && (!handled && !pkt.getReceiverName().equals(Constants.serverName))) {
+			if (pkt.getReceiverID() != null && (!handled && !pkt.getReceiverID().equals(serverUUID))) {
 				System.out.println("");
 			} else if (handled) {
 				
@@ -160,9 +160,9 @@ public class ServerNode implements Runnable {
 	
 	public void stopNode() {
 		for (ServerConnection connection : connections) {
-			Packet endPacket = new Packet("CloseConnection", serverUUID.toString(), connection.getID().toString());
+			Packet endPacket = new Packet("CloseConnection", serverUUID, connection.getID());
 			endPacket.setData(new String[][]{{"ServerNode terminated"}});
-			connection.send(endPacket.getJSON());
+			connection.send(endPacket);
 		}
 		if (nodeThread != null) {
 			nodeThread.interrupt();

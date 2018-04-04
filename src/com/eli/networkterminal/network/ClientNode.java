@@ -33,24 +33,17 @@ public class ClientNode {
 		this.serverID = serverID;
 	}
 
-	public final ArrayList<PacketHandler> handlers;
+	public final ArrayList<ClientPacketHandler> handlers;
 	
 	public ClientNode() {
-		this.handlers = new ArrayList<PacketHandler>();
+		this.handlers = new ArrayList<ClientPacketHandler>();
 		registerPacketHandlers();
 	}
 	
-	public boolean send(String signal) {
-		try {
-			output.writeUTF(signal);
-		} catch (IOException e) {
-			System.out.println("Error while sending signal: " + e.getMessage());
-			return false;
-		}
-		return true;
-	}
-	
 	public boolean send(Packet pkt) {
+		// after the server connection is established, the first thing it does is send the client's UUID.
+		// Which makes this safe.
+		pkt.setSenderID(serverConnectionID); 
 		String signal = pkt.getJSON();
 		try {
 			output.writeUTF(signal);
@@ -66,10 +59,10 @@ public class ClientNode {
 		if (pkt != null) {
 			System.out.println("Received packet with header " + pkt.getHeader());
 			boolean handled = false;
-			for (PacketHandler p : handlers) {
+			for (ClientPacketHandler p : handlers) {
 				if (p.getHeader().equals(pkt.getHeader())) {
 					handled = true;
-					p.handle(pkt);
+					p.handle(pkt, this);
 				}
 			}
 			if (!handled) {
